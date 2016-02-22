@@ -50,7 +50,6 @@ var SMParse = {
         for (var i in notes) {
             var beatNotes = notes[i].trim().replace(/\s+/gm, " ").split(/\s+/);
             for (var j in beatNotes) {
-                if (beatNotes[j] === "0000") continue;
                 var beat = 4 * (parseInt(i) + (parseInt(j) / beatNotes.length));
                 beats.push([beat].concat(beatNotes[j].split("")));
             }
