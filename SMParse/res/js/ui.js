@@ -1,9 +1,10 @@
+"use strict";
 $(document).ready(function() {
     $("#load").click(function(e) {
         $.ajax({
             "url": $("#url").val(),
             "success": function(resp, stat, xhr) {
-                data = smParse(resp);
+                var data = SMParse.parse(resp);
                 $("#result").text(JSON.stringify(data, null, 2));
                 console.log(data);
             },
