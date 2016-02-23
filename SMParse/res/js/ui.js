@@ -53,37 +53,20 @@ $(document).ready(function() {
         $("#data").val(JSON.stringify(data, null, 2));
         $("#render").val(render(data));
     }
-    $(window).on("hashchange", function(e) {
-        var url = decodeURI(window.location.hash.substr(1));
-        $("#url").val(url);
-        if (!url) return;
-        $.ajax({
-            "url": url,
-            "success": function(resp, stat, xhr) {
-                parse(resp);
-            },
-            "error": function(xhr, stat, err) {
-                alert("Failed to load '" + url + "': " + err);
-            }
-        });
-    }).trigger("hashchange");
-    $("#load").submit(function(e) {
-        e.preventDefault();
-        window.location.hash = "#" + encodeURI($("#url").val());
-    });
     $(window).on("dragover", function(e) {
         e.stopPropagation();
         e.preventDefault();
         e.originalEvent.dataTransfer.dropEffect = "copy";
     }).on("drop", function(e) {
-        if (!e.originalEvent.dataTransfer.files.length) return;
+        var files = e.originalEvent.dataTransfer.files;
+        if (!files.length) return;
         e.stopPropagation();
         e.preventDefault();
         var reader = new FileReader();
         reader.onload = function(e) {
-            window.location.hash = "";
             parse(e.target.result);
         };
-        reader.readAsText(e.originalEvent.dataTransfer.files[0]);
+        document.title = files[0].name + " -- StepMania chart parser";
+        reader.readAsText(files[0]);
     });
 });

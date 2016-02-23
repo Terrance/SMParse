@@ -9,19 +9,12 @@ body {
     left: 0;
     right: 0;
     margin: 0;
-    padding: 30px 0 0 200px;
-}
-form {
-    height: 30px;
-    margin-top: -30px;
-    margin-left: -200px;
-}
-input, textarea {
-    border: 0;
-    box-sizing: border-box;
+    padding: 0 0 0 200px;
 }
 textarea {
+    box-sizing: border-box;
     padding: 8px;
+    border: 0;
 }
 #url {
     width: 100%;
