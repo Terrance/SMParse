@@ -5,9 +5,12 @@
         <link rel="stylesheet" href="res/css/style.css">
     </head>
     <body>
-        <textarea id="render" placeholder="Render" readonly></textarea>
-        <textarea id="data" placeholder="Data" readonly></textarea>
+        <textarea id="data" placeholder="Drop a .sm or .ssc file here..." readonly></textarea>
+        <div id="render">
+            <canvas width="300"></canvas>
+        </div>
         <script src="/.cdn/js/jquery.min.js"></script>
+        <script src="/.cdn/js/jcanvas.min.js"></script>
         <script src="res/js/parser.js"></script>
         <script src="res/js/ui.js"></script>
     </body>
