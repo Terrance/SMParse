@@ -47,25 +47,43 @@ $(document).ready(function() {
         }
         return lines.join("\n");
     }
-    $("#load").submit(function(e) {
-        e.preventDefault();
-        window.location.hash = "#" + encodeURI($("#url").val());
-    });
+    function parse(str) {
+        var data = SMParse.parse(str);
+        console.log(data);
+        $("#data").val(JSON.stringify(data, null, 2));
+        $("#render").val(render(data));
+    }
     $(window).on("hashchange", function(e) {
         var url = decodeURI(window.location.hash.substr(1));
+        $("#url").val(url);
         if (!url) return;
         $.ajax({
             "url": url,
             "success": function(resp, stat, xhr) {
-                $("#url").val(url);
-                var data = SMParse.parse(resp);
-                console.log(data);
-                $("#data").val(JSON.stringify(data, null, 2));
-                $("#render").val(render(data));
+                parse(resp);
             },
             "error": function(xhr, stat, err) {
                 alert("Failed to load '" + url + "': " + err);
             }
         });
     }).trigger("hashchange");
+    $("#load").submit(function(e) {
+        e.preventDefault();
+        window.location.hash = "#" + encodeURI($("#url").val());
+    });
+    $(window).on("dragover", function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = "copy";
+    }).on("drop", function(e) {
+        if (!e.originalEvent.dataTransfer.files.length) return;
+        e.stopPropagation();
+        e.preventDefault();
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            window.location.hash = "";
+            parse(e.target.result);
+        };
+        reader.readAsText(e.originalEvent.dataTransfer.files[0]);
+    });
 });
