@@ -106,6 +106,7 @@ $(document).ready(function() {
             }
         }
     }
+    var rendered = 0;
     $(window).on("dragover", function(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -118,12 +119,19 @@ $(document).ready(function() {
         var reader = new FileReader();
         reader.onload = function(e) {
             var data = SMParse.parse(e.target.result);
+            window.parsed = data;
             console.log(data);
             $("#data").val(JSON.stringify(data, null, 2));
+            rendered = 0;
             render($("#render canvas"), data["NOTES"][0]);
         };
         document.title = files[0].name + " -- StepMania chart parser";
         reader.readAsText(files[0]);
+    });
+    $("#render").dblclick(function(e) {
+        if (!window.parsed) return;
+        rendered = (rendered + 1) % window.parsed["NOTES"].length;
+        render($("#render canvas"), window.parsed["NOTES"][rendered]);
     });
     var imgs = ["notes", "hold", "hold-end"];
     for (var i in imgs) (new Image()).src = "res/img/" + imgs[i] + ".png";
