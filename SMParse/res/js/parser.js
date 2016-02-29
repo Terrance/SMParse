@@ -35,13 +35,21 @@ var SMParse = {
     parse: function parse(str) {
         var lines = str.replace(/\/\/.*$/gm, "").split(";");
         var data = {};
+        var notesTags = ["STEPSTYPE", "DESCRIPTION", "DIFFICULTY", "METER", "RADARVALUES", "NOTES"];
         for (var i in lines) {
             var parts = lines[i].trim().split(":");
             var tag = parts.splice(0, 1)[0].replace(/^#/, "");
+            var val;
             if (parts.length === 1) {
-                data[tag] = parts[0];
+                val = parts[0];
             } else if (parts.length > 1) {
-                data[tag] = parts;
+                val = parts;
+            }
+            if (notesTags.indexOf(tag) > -1) {
+                if (!data[tag]) data[tag] = [];
+                data[tag].push(val);
+            } else {
+                data[tag] = val;
             }
         }
         data["SELECTABLE"] = (data["SELECTABLE"] === "YES");
@@ -58,24 +66,29 @@ var SMParse = {
             }
             data[tag] = subdata;
         }
-        if (typeof data["NOTES"] === "object") {
-            var parts = data["NOTES"];
-            var notesTags = ["STEPSTYPE", "DESCRIPTION", "DIFFICULTY", "METER", "RADARVALUES", "NOTES"];
-            for (var i in notesTags) {
-                data[notesTags[i]] = parts[i].trim();
+        for (var i in data["NOTES"]) {
+            if (typeof data["NOTES"][i] === "object") {
+                var parts = data["NOTES"][i];
+                for (var j in notesTags) {
+                    var tag = notesTags[j];
+                    if (!data[tag]) data[tag] = [];
+                    data[tag].append(parts[i].trim());
+                }
             }
         }
-        data["RADARVALUES"] = data["RADARVALUES"].split(",");
-        var notes = data["NOTES"].trim().split(/,\s*/);
-        var bars = [];
-        for (var i in notes) {
-            var barNotes = notes[i].trim().replace(/\s+/gm, " ").split(/\s+/);
-            for (var j in barNotes) {
-                barNotes[j] = barNotes[j].split("");
+        for (var i in data["NOTES"]) {
+            data["RADARVALUES"][i] = data["RADARVALUES"][i].split(",");
+            var notes = data["NOTES"][i].trim().split(/,\s*/);
+            var bars = [];
+            for (var j in notes) {
+                var barNotes = notes[j].trim().replace(/\s+/gm, " ").split(/\s+/);
+                for (var k in barNotes) {
+                    barNotes[k] = barNotes[k].split("");
+                }
+                bars.push([parseInt(j), barNotes]);
             }
-            bars.push([parseInt(i), barNotes]);
+            data["NOTES"][i] = bars;
         }
-        data["NOTES"] = bars;
         return data;
     }
 };
