@@ -38,6 +38,7 @@ var SMParse = {
         var notesTags = ["STEPSTYPE", "DESCRIPTION", "DIFFICULTY", "METER", "RADARVALUES", "NOTES"];
         for (var i in lines) {
             var parts = lines[i].trim().split(":");
+            parts = [parts.shift(), parts.join(":")];
             var tag = parts.splice(0, 1)[0].replace(/^#/, "");
             var val;
             if (parts.length === 1) {
@@ -45,7 +46,14 @@ var SMParse = {
             } else if (parts.length > 1) {
                 val = parts;
             }
-            if (notesTags.indexOf(tag) > -1) {
+            if (tag === "NOTES" && val.indexOf(":") > -1) {
+                var nParts = val.split(":");
+                for (var j in notesTags) {
+                    var nTag = notesTags[j];
+                    if (!data[nTag]) data[nTag] = [];
+                    data[nTag].push(nParts[j].trim());
+                }
+            } else if (notesTags.indexOf(tag) > -1) {
                 if (!data[tag]) data[tag] = [];
                 data[tag].push(val);
             } else {
@@ -56,7 +64,7 @@ var SMParse = {
         var listTags = ["ATTACKS", "BGCHANGES", "BPMS", "COMBOS", "DELAYS", "FGCHANGES", "KEYSOUNDS", "LABELS", "SCROLLS", "SPEEDS", "STOPS", "TICKCOUNTS", "TIMESIGNATURES", "WARPS"];
         for (var i in listTags) {
             var tag = listTags[i];
-            if (!data.hasOwnProperty(tag)) continue;
+            if (!data[tag]) continue;
             var parts = data[tag].replace(/\s+/gm, "").split(",").filter(function(x) { return !!x; });
             var subdata = [];
             for (var j in parts) {
@@ -65,16 +73,6 @@ var SMParse = {
                 subdata.push(subparts);
             }
             data[tag] = subdata;
-        }
-        for (var i in data["NOTES"]) {
-            if (typeof data["NOTES"][i] === "object") {
-                var parts = data["NOTES"][i];
-                for (var j in notesTags) {
-                    var tag = notesTags[j];
-                    if (!data[tag]) data[tag] = [];
-                    data[tag].append(parts[i].trim());
-                }
-            }
         }
         for (var i in data["NOTES"]) {
             data["RADARVALUES"][i] = data["RADARVALUES"][i].split(",");
