@@ -118,20 +118,22 @@ $(document).ready(function() {
         e.preventDefault();
         var reader = new FileReader();
         reader.onload = function(e) {
-            var data = SMParse.parse(e.target.result);
-            window.parsed = data;
-            console.log(data);
-            $("#data").val(JSON.stringify(data, null, 2));
+            var parse = new SMParse(e.target.result);
+            window.parse = parse;
+            console.log(parse);
+            $("#data").val(JSON.stringify(parse, function(k, v) {
+                return (k === "raw" ? undefined : v);
+            }, 2));
             rendered = 0;
-            render($("#render canvas"), data["NOTES"][0]);
+            render($("#render canvas"), parse.charts[0].notes);
         };
         document.title = files[0].name + " -- StepMania chart parser";
         reader.readAsText(files[0]);
     });
     $("#render").dblclick(function(e) {
-        if (!window.parsed) return;
-        rendered = (rendered + 1) % window.parsed["NOTES"].length;
-        render($("#render canvas"), window.parsed["NOTES"][rendered]);
+        if (!window.parse) return;
+        rendered = (rendered + 1) % window.parse.charts.length;
+        render($("#render canvas"), window.parse.charts[rendered].notes);
     });
     var imgs = ["notes", "hold", "hold-end"];
     for (var i in imgs) (new Image()).src = "res/img/" + imgs[i] + ".png";
