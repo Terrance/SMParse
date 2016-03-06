@@ -17,6 +17,19 @@ The `SMParse` class is provided by [parser.js](SMParse/res/js/parser.js), which 
 ```js
 var SMParse = require("path/to/parser");
 require("fs").readFile("path/to/chart.ssc", function(err, data) {
-    var parse = SMParse(data);
+    var parse = new SMParse(data);
 });
+```
+
+## Data structure
+
+```
+{
+    meta: {title, subtitle, artist, credit, origin, cd, genre, type: [format, version], select},
+    files: {banner, jacket, cd, disc, video, bg, music, lyrics},
+    times: {offset, sample: {start, length}, labels},
+    changes: {bpm, stop, delay, warp, timesig, tick, combo, speed, scroll, fake, key, attack, bg, fg},
+    charts: [{name, credit, type, desc, style, diff, meter, data, radar, notes}],
+    raw
+}
 ```
